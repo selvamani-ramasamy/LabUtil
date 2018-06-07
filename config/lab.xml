@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<labs>
+    <config_common>
+        <location> common/config/location </location>
+    </config_common>
+
+    <lab id="selva_3928">
+        <dut>
+            <name>A24-11-3928</name>
+            <type>eredan</type>
+            <management_access>10.33.40.133</management_access>
+            <console_access>10.33.50.31 4009</console_access>
+            <config_file></config_file>
+        </dut>
+        <dut>
+            <name>A24-12-3928</name>
+            <type>eredan</type>
+            <management_access>10.33.40.137</management_access>
+            <console_access>10.33.50.31 4008</console_access>
+            <config_file></config_file>
+        </dut>
+        <dut>
+            <name>A24-13-3928</name>
+            <type>eredan</type>
+            <management_access>10.33.40.148</management_access>
+            <console_access>10.33.50.31 4007</console_access>
+            <config_file></config_file>
+        </dut>
+        <dut>
+            <name>A24-14-3928</name>
+            <type>eredan</type>
+            <management_access>10.33.40.160</management_access>
+            <console_access>10.33.50.31 4006</console_access>
+            <config_file></config_file>
+        </dut>
+        <dut>
+            <name>A24-16-3928</name>
+            <type>eredan</type>
+            <management_access>10.33.40.165</management_access>
+            <console_access>10.33.50.31 4005</console_access>
+            <config_file></config_file>
+        </dut>
+    </lab>
+</labs>
