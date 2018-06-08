@@ -5,8 +5,8 @@ Created on Jun 6, 2018
 '''
 import os
 
-import utilsCommon
-from utilsCommon import LAB_XML_FILE_PATH
+from src.utils import UtilsCommon
+from src.utils.UtilsCommon import LAB_XML_FILE_PATH
 
 import logging
 
