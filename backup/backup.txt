@@ -1,0 +1,212 @@
+def parseLabConfig():
+    #DOMTree = xml.dom.minidom.parse("config/lab.xml")
+    print (XMLFILES_FOLDER + "lab.xml")
+    #DOMTree = xml.dom.minidom.parse(XMLFILES_FOLDER + "lab.xml")
+    DOMTree = xml.dom.minidom.parse("/Users/sramasam/Documents/1.Selva/e-workspace/LabUtil/config/lab.xml")
+    root = DOMTree.documentElement
+
+    labs = root.getElementsByTagName("lab")
+
+    '''
+    for labElement in labs:
+        if labElement.hasAttribute("id"):
+            print ("lab id: %s" %labElement.getAttribute("id"))
+            print ("-------------")
+        duts = labElement.getElementsByTagName("dut")
+        for dut in duts:
+            device = Device()
+            dutName = dut.getElementsByTagName('name')[0]
+
+            if len(dutName.childNodes) == 1:
+                device.name = dutName.childNodes[0].data
+                print "device name : %s" %device.name
+            else:
+                print "device name can not be left empty"
+                exit (0)
+
+    exit (0)
+    '''
+
+    for labElement in labs:
+        #lab = Lab()
+
+        if labElement.hasAttribute("id"):
+            logDebug("lab id: %s" %labElement.getAttribute("id"))
+            lab = Lab(labElement.getAttribute("id"))
+            #lab.name = labElement.getAttribute("id")
+
+        duts = labElement.getElementsByTagName("dut")
+
+        for dut in duts:
+            #device = None
+
+            dutName = dut.getElementsByTagName('name')[0]
+            dutType = dut.getElementsByTagName('type')[0]
+            mgmtAccess = dut.getElementsByTagName('management_access')[0]
+            consoleAccess = dut.getElementsByTagName('console_access')[0]
+            configFile = dut.getElementsByTagName('config_file')[0]
+
+            if dutType.childNodes[0].data == 'eredan':
+                '''  name '''
+                if len(dutName.childNodes) == 1:
+                    device = Eredan(dutName.childNodes[0].data)
+                else:
+                    logCritical("device name can not be left empty")
+                    exit (0)
+            elif dutType.childNodes[0].data == 'caliondo':
+                #device = Caliondo()
+                '''  name '''
+                if len(dutName.childNodes) == 1:
+                    device = Caliondo(dutName.childNodes[0].data)
+                else:
+                    logCritical("device name can not be left empty")
+                    exit (0)
+
+            else:
+                logError("Invalid device type : %s " %dutType.childNodes[0].data)
+                exit (0)
+
+            ''' type '''
+            if len(dutType.childNodes) == 1:
+                device.type = dutType.childNodes[0].data
+            else:
+                logCritical("device type for device %s can not be left empty" %device.name)
+                exit (0)
+
+            ''' management access '''
+            if len(mgmtAccess.childNodes) == 1:
+                device.managementAccess = mgmtAccess.childNodes[0].data
+            else:
+                logCritical("management access for device %s is not available " %device.name)
+                exit (0)
+
+            ''' console access '''
+            if len(consoleAccess.childNodes) == 1:
+                device.consoleAcccess = consoleAccess.childNodes[0].data
+
+            ''' console access '''
+            if len(configFile.childNodes) == 1:
+                device.defaultConfig = configFile.childNodes[0].data
+
+            lab.addDevice(device)
+            logDebug ("adding dut: %s" %(device.name + " : " + lab.name))
+
+        ''' add the lab to lablist '''
+        labList.append(lab)
+        
+        
+def connectToConsoleAccess(self):
+        ''' connect to console access:'''
+        short_sleep            = 5
+        long_sleep = 60
+        max_retry = 50
+        max_short_sleep_retry = 10
+        sleeptime = short_sleep
+        retry_ctr = 0
+        connected = False
+        while (connected == False):
+            print ("telnet %s" %self.consoleAcccess)
+            self.pe = pexpect.spawn ("telnet %s" %self.consoleAcccess)
+            #self.pe.expect(pexpect.EOF)
+            #self.pe.expect(self.pe.EOF, timeout=None)
+            #self.pe.sendcontrol(char)("\r\r")
+            try:
+                self.pe.sendline("\r")
+                index = self.pe.expect(['>', 'login:'])
+                if index == 0:
+                    connected = True
+                    '''already logged in '''
+                    self.pe.sendline("\r")
+                    self.pe.interact()
+                    return
+                elif index == 1:
+                    connected = True
+                    ''' login prompt '''
+            except:
+                ''' retry logic '''
+                if (retry_ctr < max_retry):
+                    retry_ctr = retry_ctr + 1;
+    
+                    if (retry_ctr > max_short_sleep_retry):
+                        sleeptime = long_sleep
+    
+                    print("login: %s no response, retry %d times, time now is %s, will sleep for %d sec..."%
+                            (self.managementAccess, retry_ctr, time.strftime('%H:%M:%S'), sleeptime))
+    
+                    time.sleep(sleeptime)
+            '''
+            try:
+                print ("after : " +  self.pe.read_nonblocking(1024, timeout=30))
+                #self.pe.sendline("\r\n\r\n")
+                self.pe.sendline("\r")
+                print ("after : " +  self.pe.read_nonblocking(1024, timeout=30))
+                self.pe.expect (">")
+                self.pe.sendline("\r")
+                self.pe.interact()
+            except:
+                try:
+                    print ("after : " +  self.pe.read_nonblocking(1024, timeout=30))
+                    #self.pe.sendline("\r\n\r\n")
+                    self.pe.sendline("\r")
+                    print ("after : " +  self.pe.read_nonblocking(1024, timeout=30))
+                    self.pe.expect("login:")
+                    break
+                except:
+                    if (retry_ctr < max_retry):
+                        retry_ctr = retry_ctr + 1;
+        
+                        if (retry_ctr > max_short_sleep_retry):
+                            sleeptime = long_sleep
+        
+                        print("login: %s no response, retry %d times, time now is %s, will sleep for %d sec..."%
+                                (self.managementAccess, retry_ctr, time.strftime('%H:%M:%S'), sleeptime))
+        
+                        time.sleep(sleeptime)
+                else:
+                    break
+            else:
+                break 
+            '''
+
+        '''
+        On 8700, the login prompt comes initially when its still rebooting. The output is as shown. 
+        Login incorrect
+        pos8700-02 login: so show
+        Password: 
+        System still initializing, there are
+        no SAOS user accounts available yet.
+        While loop is added to wait till 8700 comes up and password is accepted after initial login prompt is seen. 
+        '''
+        while (True):
+            try:
+                self.pe.sendline ('gss')
+                self.pe.expect ('Password:')
+                self.pe.sendline ('pureethernet')
+                self.pe.expect (">")
+                self.pe.sendline("")
+                # extract the prompt, which is the last line of the pe.before buffer
+                self.pe.expect(">")
+                ''' just remove these lines for silent login '''
+                self.pe.sendline("\r")
+                self.pe.interact()
+                #self.pe.sendline("\r\n")
+                break
+            except:
+                if (retry_ctr < max_retry):
+                    retry_ctr = retry_ctr + 1;
+                    ''' If it has retried for the max_short_sleep_retry times, it is time to sleep
+                        longer. We typically need it for the 8700 case. '''
+                    if (retry_ctr > max_short_sleep_retry):
+                        sleeptime = long_sleep
+        
+                    print("login_pe: %s no response, retry %d times, time now is %s, will sleep for %d sec..."%
+                            (self.managementAccess, retry_ctr, time.strftime('%H:%M:%S'), sleeptime))
+        
+                    time.sleep(sleeptime)
+                else:
+                    break
+        
+        res = self.pe.before.split('\n')
+        # Turn this on for debug
+        #self.pe.logfile=sys.stdout
+        return(self.pe, res[1]+"> ")

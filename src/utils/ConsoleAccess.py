@@ -5,17 +5,20 @@ Created on Jun 6, 2018
 '''
 import os
 
-settings_dir = os.path.dirname(__file__)
-PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
-XMLFILES_FOLDER = os.path.join(PROJECT_ROOT, '../config/')
+import utilsCommon
+from utilsCommon import LAB_XML_FILE_PATH
+
+#PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
+#XMLFILES_FOLDER = os.path.join(PROJECT_ROOT, '../config/')
 
 import logging
-from LLogger import setLogLevel
+from src.common.LLogger import setLogLevel
 
-from Lab import Lab
+from src.common.Lab import Lab
 
 
-labFilePath = "/Users/sramasam/Documents/1.Selva/e-workspace/LabUtil/config/lab.xml"
+#labFilePath = "/Users/sramasam/Documents/1.Selva/e-workspace/LabUtil/config/lab.xml"
+labFilePath = LAB_XML_FILE_PATH
 
 if __name__ == '__main__':
     ''' possible values: CRITICAL   ERROR  WARNINIG  INFO  DEBUG '''
@@ -35,5 +38,5 @@ if __name__ == '__main__':
             selectedDevice = int(val)
             # get the device and do the operation
             labItem.showDevice(selectedDevice)
-            labItem.getDevice(selectedDevice).connectToManagementAccess()
+            labItem.getDevice(selectedDevice).connectToConsoleAccess()
 

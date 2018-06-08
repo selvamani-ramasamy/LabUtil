@@ -3,7 +3,7 @@ Created on Jun 6, 2018
 
 @author: sramasam
 '''
-from src.common.Device import Device
+from Device import Device
 
 class Eredan(Device):
     '''
