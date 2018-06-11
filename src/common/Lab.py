@@ -1,38 +1,41 @@
 '''
 Created on Jun 6, 2018
 
-@author: sramasam
+@author: selvamani ramasamy
 '''
 
-import os
-from xml.dom.minidom import parse
+#import os
+#from xml.dom.minidom import parse
 import xml.dom.minidom
 
-from LLogger import logCritical
-from LLogger import logError
-from LLogger import logDebug 
+from src.common.LULogger import logCritical
+from src.common.LULogger import logError
+from src.common.LULogger import logDebug 
 
 from Eredan import Eredan
 from Caliondo import Caliondo
 
 class Lab(object):
-    '''
-    classdocs
-    '''
     deviceList = []
     name = None
-    labFile = None
+    labFile = None #xml file comprising lab information
+    ftpServer = None
+    tftpServer = None
+    softPackageName = None
+    softPackagePath = None
+    baseConfigPath = None
+    configPath = None
 
+    ''' Constructor '''
     def __init__(self, labFilePath):
-        '''
-        Constructor
-        '''
         self.labFile = labFilePath
         self.parseLabConfig()
 
+    ''' add device to the list '''
     def addDevice(self, device):
         self.deviceList.append(device)
 
+    ''' remove the device from the list '''
     def removeDevice(self, deviceName):
         for device in self.deviceList:
             if (device.name == deviceName):
@@ -40,6 +43,7 @@ class Lab(object):
             else:
                 print ("The device \'%s\'is not found in the Lab %s" %deviceName %self.name)
 
+    ''' get the device '''
     def getDevice(self, sequence):
         if (sequence <= 0) or (sequence > len(self.deviceList)):
             print ("Error: device is not available")
@@ -49,9 +53,19 @@ class Lab(object):
         if device is not None:
             return device
 
+    ''' show lab information '''
     def showLab(self):
         print ("lab name: %s" %self.name)
         print "~~~~~~~~~~~~~~~~~~~~~~~~~"
+        print ("ftp server       :%s" %self.ftpServer)
+        print ("tftp server      :%s" %self.tftpServer)
+        print ("package name     :%s" %self.softPackageName)
+        print ("package path     :%s" %self.softPackagePath)
+        print ("base config path :%s" %self.baseConfigPath)
+        print ("config path      :%s" %self.configPath)
+        print ""
+        print "DUT info:"
+        print "~~~~~~~~~~"
         print ("{0:<5} {1:15} {2:10} {3:15} {4:15}".format("S.No", "Name", "Type", "Mgmt Access", "Console Access"))
         #print ("Name\tType\tMgmt Access\tConsole Access \t")
         index = 0;
@@ -68,12 +82,15 @@ class Lab(object):
             print "--------------"
             '''
 
+    ''' install Software for all devices '''
     def installSoftware(self):
-        ''' install software for all devices '''
-    
-    def loadConfiguration(self):
-        ''' load configuration in all devices '''
-    
+        ''' TODO:  '''
+
+    ''' load the configuration for all devices '''
+    #def loadConfiguration(self):
+    #    ''' TODO: '''
+
+    ''' show all devices information '''
     def showDevice(self, sequence):
         if (sequence <= 0) or (sequence > len(self.deviceList)):
             print ("Error: device is not available")
@@ -82,23 +99,34 @@ class Lab(object):
         device = self.deviceList[sequence -1]
         if device is not None:
             print ("{0:<5} {1:15} {2:10} {3:15} {4:15}".format(sequence, device.name, device.type, device.managementAccess, device.consoleAcccess))
-    
+
+    ''' parse lab config xml and populat the devices '''
     def parseLabConfig(self):
-        #DOMTree = xml.dom.minidom.parse("config/lab.xml")
-        #print (XMLFILES_FOLDER + "lab.xml")
-        #DOMTree = xml.dom.minidom.parse(XMLFILES_FOLDER + "lab.xml")
-        print ("parsing : %s" %self.labFile)
+        logDebug ("parsing : %s" %self.labFile)
         DOMTree = xml.dom.minidom.parse(self.labFile)
         root = DOMTree.documentElement
     
         nodeLabs = root.getElementsByTagName("lab")
         for nodeLab in nodeLabs:
-            #lab = Lab()
             if nodeLab.hasAttribute("id"):
                 logDebug("lab id: %s" %nodeLab.getAttribute("id"))
-                #lab = Lab(nodeLab.getAttribute("id"))
                 self.name = nodeLab.getAttribute("id")
-            #lab.name = labElement.getAttribute("id")
+
+            ''' parse lab_info '''
+            labInfoNode = nodeLab.getElementsByTagName("lab_info")[0]
+            if len(labInfoNode.childNodes) > 0:
+                if len(labInfoNode.getElementsByTagName('ftp_server')[0].childNodes) == 1:
+                    self.ftpServer = labInfoNode.getElementsByTagName('ftp_server')[0].firstChild.data
+                if len(labInfoNode.getElementsByTagName('tftp_server')[0].childNodes) == 1:
+                    self.tftpServer = labInfoNode.getElementsByTagName('tftp_server')[0].firstChild.data
+                if len(labInfoNode.getElementsByTagName('package')[0].childNodes) == 1:
+                    self.softPackageName = labInfoNode.getElementsByTagName('package')[0].firstChild.data
+                if len(labInfoNode.getElementsByTagName('package_path')[0].childNodes) == 1:
+                    self.softPackagePath = labInfoNode.getElementsByTagName('package_path')[0].firstChild.data
+                if len(labInfoNode.getElementsByTagName('base_config_path')[0].childNodes) == 1:
+                    self.baseConfigPath = labInfoNode.getElementsByTagName('base_config_path')[0].firstChild.data
+                if len(labInfoNode.getElementsByTagName('config_path')[0].childNodes) == 1:
+                    self.configPath = labInfoNode.getElementsByTagName('config_path')[0].firstChild.data
 
             duts = nodeLab.getElementsByTagName("dut")
     
@@ -118,7 +146,6 @@ class Lab(object):
                         logCritical("device name can not be left empty")
                         exit (0)
                 elif dutType.childNodes[0].data == 'caliondo':
-                    #device = Caliondo()
                     '''  name '''
                     if len(dutName.childNodes) == 1:
                         device = Caliondo(dutName.childNodes[0].data)
@@ -153,4 +180,28 @@ class Lab(object):
                     device.defaultConfig = configFile.childNodes[0].data
     
                 self.addDevice(device)
-                logDebug ("adding dut: %s" %(device.name + " : " + self.name))
+                logDebug ("adding dut: %s" %(device.name + " to lab: " + self.name))
+
+    ''' check base config and config path entries '''
+    def validateConfigPath(self):
+        if self.baseConfigPath is None:
+            logCritical("base config path is empty")
+            return False
+
+        if self.configPath is None:
+            logCritical("config path is empty")
+            return False
+
+        return True
+
+    ''' validate software package name and package path entries '''
+    def validateSoftwarePackage(self):
+        if self.softPackageName is None:
+            logCritical("software package name is empty")
+            return False
+
+        if self.softPackagePath is None:
+            logCritical("software package path is empty")
+            return False
+
+        return True

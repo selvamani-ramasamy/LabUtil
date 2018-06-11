@@ -1,7 +1,7 @@
 '''
 Created on Jun 7, 2018
 
-@author: sramasam
+@author: selvamani ramasamy
 '''
 
 import logging
@@ -15,7 +15,7 @@ def getLogger():
 
 def setLogLevel(level):
     logger.setLevel(level)
-    #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def logCritical(message):
     logger.critical(message)
@@ -28,24 +28,11 @@ def logWarning(message):
 
 def logInfo(message):
     logger.info(message)
-'''
+
 def logDebug(message):
-    logger.warning(message)
-'''
-debug = False
-def logDebug(message):
-    if debug == True:
-        print message
-        
+    logger.debug(message)
 
 class MyClass(object):
-    '''
-    classdocs
-    '''
-
-
+    ''' Constructor '''
     def __init__(self, params):
-        '''
-        Constructor
-        '''
-        
+        ''' nothing to do for now'''

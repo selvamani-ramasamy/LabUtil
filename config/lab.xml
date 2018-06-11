@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
 <labs>
-    <config_common>
-        <location> common/config/location </location>
-    </config_common>
-
     <lab id="selva_3928">
+        <lab_info>
+            <ftp_server>10.32.8.97</ftp_server>
+            <tftp_server>10.32.8.97</tftp_server>
+            <package>saos-16-07-95-0095</package>
+            <package_path>sramasam/build</package_path>
+            <base_config_path>config/topology/base</base_config_path>
+            <config_path>config/topology</config_path>
+        </lab_info>
         <dut>
             <name>A24-11-3928</name>
             <type>eredan</type>

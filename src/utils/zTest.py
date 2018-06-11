@@ -3,25 +3,13 @@ Created on Jun 6, 2018
 
 @author: sramasam
 '''
-import os
 
-settings_dir = os.path.dirname(__file__)
-PROJECT_ROOT = os.path.abspath(os.path.dirname(settings_dir))
-XMLFILES_FOLDER = os.path.join(PROJECT_ROOT, '../config/')
-
-import logging
-from LLogger import setLogLevel
-
-from Lab import Lab
-
-
-labFilePath = "/Users/sramasam/Documents/1.Selva/e-workspace/LabUtil/config/lab.xml"
+from UtilsCommon import *
+from src.common.Lab import Lab
 
 if __name__ == '__main__':
-    ''' possible values: CRITICAL   ERROR  WARNINIG  INFO  DEBUG '''
-    setLogLevel(logging.DEBUG)
-    ''' initialize the lab '''
-    labItem = Lab(labFilePath)
+    ''' initialize the lab - change the file path in UtilsCommon.py'''
+    labItem = Lab(LAB_XML_FILE)
 
     val  = ""
     while((val != 'quit') or (val !='q')):
@@ -36,4 +24,3 @@ if __name__ == '__main__':
             # get the device and do the operation
             labItem.showDevice(selectedDevice)
             labItem.getDevice(selectedDevice).connectToManagementAccess()
-

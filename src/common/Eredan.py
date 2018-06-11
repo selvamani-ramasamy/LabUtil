@@ -1,18 +1,11 @@
 '''
 Created on Jun 6, 2018
 
-@author: sramasam
+@author: selvamani ramasamy
 '''
 from Device import Device
 
 class Eredan(Device):
-    '''
-    classdocs
-    '''
-
-
+    ''' Constructor '''
     def __init__(self, deviceName):
-        '''
-        Constructor
-        '''
         self.name = deviceName;

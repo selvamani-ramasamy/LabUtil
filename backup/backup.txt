@@ -1,3 +1,7 @@
+reference: 
+spawn xterm - src/software/saos-common/genericSwitch/autoUT/bin/spawn_xterm
+
+
 def parseLabConfig():
     #DOMTree = xml.dom.minidom.parse("config/lab.xml")
     print (XMLFILES_FOLDER + "lab.xml")

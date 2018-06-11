@@ -1,28 +1,15 @@
 '''
 Created on Jun 6, 2018
 
-@author: sramasam
+@author: selvamani ramasamy
 '''
-import os
 
-from src.utils import UtilsCommon
-from src.utils.UtilsCommon import LAB_XML_FILE_PATH
-
-import logging
-
-from src.common.LLogger import setLogLevel
-
+from UtilsCommon import *
 from src.common.Lab import Lab
 
-
-#labFilePath = "/Users/sramasam/Documents/1.Selva/e-workspace/LabUtil/config/lab.xml"
-labFilePath = LAB_XML_FILE_PATH
-
 if __name__ == '__main__':
-    ''' possible values: CRITICAL   ERROR  WARNINIG  INFO  DEBUG '''
-    setLogLevel(logging.DEBUG)
-    ''' initialize the lab '''
-    labItem = Lab(labFilePath)
+    ''' initialize the lab - change the file path in UtilsCommon.py'''
+    labItem = Lab(LAB_XML_FILE)
 
     val  = ""
     while((val != 'quit') or (val !='q')):
